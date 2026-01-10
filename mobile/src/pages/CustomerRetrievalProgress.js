@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Alert, Animated } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ArrowLeft, CheckCircle, Truck, Send, Clock as ClockIcon, Car, MapPin as MapPinIcon, Phone } from 'lucide-react-native';
@@ -11,6 +11,9 @@ function CustomerRetrievalProgress() {
   const route = useRoute();
   const [currentStep, setCurrentStep] = useState(1);
   const [estimatedTime, setEstimatedTime] = useState('5-7');
+  const [isSuccess, setIsSuccess] = useState(false);
+  const fadeAnim = React.useRef(new Animated.Value(0)).current;
+  const scaleAnim = React.useRef(new Animated.Value(0.9)).current;
 
   const sessionId = route.params?.sessionId;
   const vehicle = route.params?.vehicle || { model: 'Toyota Camry', license_plate: 'MH 12 AB 1234' };
@@ -58,7 +61,29 @@ function CustomerRetrievalProgress() {
 
       await AsyncStorage.removeItem('activeParking');
 
-      navigation.navigate('Home');
+      // Trigger success state
+      setIsSuccess(true);
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+        Animated.spring(scaleAnim, {
+          toValue: 1,
+          tension: 40,
+          friction: 7,
+          useNativeDriver: true,
+        })
+      ]).start();
+
+      // Navigate back after a short delay to let success sink in
+      setTimeout(() => {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
+      }, 3000);
     } catch (error) {
 
       Alert.alert('Error', 'Failed to complete parking session');
@@ -269,7 +294,28 @@ function CustomerRetrievalProgress() {
         )}
       </ScrollView>
 
-      <BottomNav />
+      {isSuccess && (
+        <Animated.View style={[
+          styles.successOverlay,
+          { opacity: fadeAnim }
+        ]}>
+          <Animated.View style={[
+            styles.successContent,
+            { transform: [{ scale: scaleAnim }] }
+          ]}>
+            <View style={styles.successIconWrapper}>
+              <CheckCircle size={60} color="#ffffff" />
+            </View>
+            <Text style={styles.successTitle}>Parking Completed!</Text>
+            <Text style={styles.successSubtitle}>Hope you had a great experience with Smart Parking. See you again!</Text>
+            <View style={styles.celebration}>
+              <Text style={{ fontSize: 32 }}>🚗 ✨ 💨</Text>
+            </View>
+          </Animated.View>
+        </Animated.View>
+      )}
+
+      {!isSuccess && <BottomNav />}
     </View>
   );
 }
@@ -567,6 +613,45 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: '#ffffff',
+  },
+  successOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#6366f1',
+    zIndex: 1000,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 32,
+  },
+  successContent: {
+    alignItems: 'center',
+    width: '100%',
+  },
+  successIconWrapper: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  successTitle: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#ffffff',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  successSubtitle: {
+    fontSize: 18,
+    color: '#ffffff',
+    textAlign: 'center',
+    opacity: 0.9,
+    lineHeight: 26,
+    marginBottom: 40,
+  },
+  celebration: {
+    marginTop: 20,
   },
 });
 

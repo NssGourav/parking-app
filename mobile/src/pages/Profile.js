@@ -28,21 +28,27 @@ export default function Profile({ navigation }) {
 
   const loadProfile = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-      const dummyProfile = {
-        full_name: 'John Doe',
-        phone: '+91 98765 43210',
-        email: 'john.doe@example.com',
-      };
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
 
-      setProfile(dummyProfile);
-      setFormData({
-        full_name: dummyProfile.full_name,
-        phone: dummyProfile.phone,
-        email: dummyProfile.email,
-      });
+      if (error) throw error;
+
+      if (data) {
+        setProfile(data);
+        setFormData({
+          full_name: data.full_name || '',
+          phone: data.phone || '',
+          email: data.email || '',
+        });
+      }
     } catch (error) {
-
+      Alert.alert('Error', 'Failed to load profile');
     } finally {
       setLoading(false);
     }
@@ -50,6 +56,20 @@ export default function Profile({ navigation }) {
 
   const handleUpdate = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          full_name: formData.full_name,
+          phone: formData.phone,
+          email: formData.email,
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
       setProfile({
         ...profile,
         full_name: formData.full_name,
@@ -59,7 +79,6 @@ export default function Profile({ navigation }) {
       setEditing(false);
       Alert.alert('Success', 'Profile updated successfully');
     } catch (error) {
-
       Alert.alert('Error', 'Failed to update profile');
     }
   };

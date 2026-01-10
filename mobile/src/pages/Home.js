@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, Animated } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../lib/supabase';
 import { Trophy, Car, Camera, MapPin, Clock, ArrowRight, ParkingCircle } from 'lucide-react-native';
@@ -12,6 +12,17 @@ function Home() {
   const [recentParking, setRecentParking] = useState([]);
   const [myVehicles, setMyVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const fadeAnim = React.useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    if (!loading) {
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [loading]);
 
   const calculateDuration = (startTime) => {
     if (!startTime) return '0m';
@@ -55,6 +66,9 @@ function Home() {
           vehicles (
             license_plate,
             model
+          ),
+          sites (
+            name
           )
         `)
         .eq('user_id', user.id)
@@ -81,6 +95,10 @@ function Home() {
           vehicles (
             license_plate,
             model
+          ),
+          sites (
+            name,
+            address
           )
         `)
         .eq('user_id', user.id)
@@ -130,7 +148,7 @@ function Home() {
   }
 
   return (
-    <View style={styles.outerContainer}>
+    <Animated.View style={[styles.outerContainer, { opacity: fadeAnim }]}>
       <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
 
         <View style={styles.header}>
@@ -223,7 +241,7 @@ function Home() {
                 <ParkingCircle size={24} color="#ffffff" />
               </View>
               <View style={styles.activeContent}>
-                <Text style={styles.activeTitle}>Phoenix Mall</Text>
+                <Text style={styles.activeTitle}>{activeParking.sites?.name || 'Parking Session'}</Text>
                 <View style={styles.activeDetails}>
                   <View style={styles.activeDetailItem}>
                     <Clock size={16} color="#4b5563" />
@@ -261,12 +279,12 @@ function Home() {
               recentParking.map((parking) => (
                 <View key={parking.id} style={styles.recentCard}>
                   <View style={styles.recentHeader}>
-                    <Text style={styles.recentSiteName}>Phoenix Mall</Text>
+                    <Text style={styles.recentSiteName}>{parking.sites?.name || 'Parking Site'}</Text>
                     <Text style={styles.recentCost}>₹{parking.amount}</Text>
                   </View>
                   <View style={styles.recentLocation}>
                     <MapPin size={16} color="#4b5563" />
-                    <Text style={styles.recentLocationText}>Lower Parel, Mumbai</Text>
+                    <Text style={styles.recentLocationText}>{parking.sites?.address || 'Site Address'}</Text>
                   </View>
                   <View style={styles.recentStatus}>
                     <Text style={styles.recentStatusText}>{parking.status}</Text>
@@ -292,7 +310,7 @@ function Home() {
         </View>
       </ScrollView>
       <BottomNav />
-    </View>
+    </Animated.View>
   );
 }
 

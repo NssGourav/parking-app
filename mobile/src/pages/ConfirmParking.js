@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, Alert, Animated } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase';
@@ -11,6 +11,15 @@ function ConfirmParking() {
   const route = useRoute();
   const [selectedPayment, setSelectedPayment] = useState('upi');
   const [isProcessing, setIsProcessing] = useState(false);
+  const fadeAnim = React.useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
   const vehicleData = route.params?.vehicle || {
     model: 'Honda Civic',
@@ -40,7 +49,7 @@ function ConfirmParking() {
 
       const requestedSiteId = route.params?.site?.id;
 
-      // If no site was passed, try to fetch the first active one as a last resort
+      // Ensure we have a site ID
       let finalSiteId = requestedSiteId;
       if (!finalSiteId) {
         const { data: firstSite } = await supabase.from('sites').select('id').eq('is_active', true).limit(1).single();
@@ -53,67 +62,92 @@ function ConfirmParking() {
         return;
       }
 
-      // 3.5 Clean up any existing active or retrieving sessions first (Prevent duplicates)
-      await supabase
-        .from('parking_sessions')
-        .update({ status: 'completed', exit_time: new Date().toISOString() })
-        .eq('user_id', user.id)
-        .in('status', ['active', 'retrieving']);
+      // 1. Attempt High-Performance Consolidated RPC Call
+      // This handles cleanup, session creation, and transaction in a SINGLE round-trip
+      const { data: rpcData, error: rpcError } = await supabase.rpc('start_parking_session_v1', {
+        p_user_id: user.id,
+        p_vehicle_id: route.params?.vehicle?.id || null,
+        p_site_id: finalSiteId,
+        p_vehicle_number: vehicleData.license_plate,
+        p_vehicle_model: vehicleData.model,
+        p_payment_method: selectedPayment,
+        p_amount: 150.00,
+        p_base_rate: 100.00,
+        p_service_fee: 30.00,
+        p_gst: 20.00
+      });
 
+      let session;
 
-      const sessionData = {
-        user_id: user.id,
-        vehicle_id: route.params?.vehicle?.id || null,
-        site_id: finalSiteId,
-        vehicle_number: vehicleData.license_plate,
-        vehicle_type: 'car',
-        vehicle_model: vehicleData.model,
-        entry_time: new Date().toISOString(),
-        status: 'active'
-      };
+      if (!rpcError && rpcData) {
+        session = rpcData;
+      } else {
+        // 2. Fallback to Legacy Sequential Mode (if RPC is not yet migrated)
+        // Note: This is slower due to multiple network round-trips
 
-      const { data: session, error: sessionError } = await supabase
-        .from('parking_sessions')
-        .insert(sessionData)
-        .select()
-        .single();
+        // Cleanup existing sessions
+        await supabase
+          .from('parking_sessions')
+          .update({ status: 'completed', exit_time: new Date().toISOString() })
+          .eq('user_id', user.id)
+          .in('status', ['active', 'retrieving']);
 
-      if (sessionError) throw sessionError;
+        // Create new session
+        const sessionData = {
+          user_id: user.id,
+          vehicle_id: route.params?.vehicle?.id || null,
+          site_id: finalSiteId,
+          vehicle_number: vehicleData.license_plate,
+          vehicle_type: 'car',
+          vehicle_model: vehicleData.model,
+          entry_time: new Date().toISOString(),
+          status: 'active'
+        };
 
+        const { data: newSession, error: sessionError } = await supabase
+          .from('parking_sessions')
+          .insert(sessionData)
+          .select()
+          .single();
 
-      const transactionData = {
-        user_id: user.id,
-        vehicle_id: route.params?.vehicle?.id || null,
-        site_id: finalSiteId,
-        parking_session_id: session.id,
-        amount: 150.00,
-        base_rate: 100.00,
-        service_fee: 30.00,
-        gst: 20.00,
-        payment_method: selectedPayment,
-        status: 'completed', // For the prototype, we assume success
-        completed_at: new Date().toISOString()
-      };
+        if (sessionError) throw sessionError;
+        session = newSession;
 
-      const { error: transError } = await supabase
-        .from('transactions')
-        .insert(transactionData);
+        // Create transaction
+        const transactionData = {
+          user_id: user.id,
+          vehicle_id: route.params?.vehicle?.id || null,
+          site_id: finalSiteId,
+          parking_session_id: session.id,
+          amount: 150.00,
+          base_rate: 100.00,
+          service_fee: 30.00,
+          gst: 20.00,
+          payment_method: selectedPayment,
+          status: 'completed',
+          completed_at: new Date().toISOString()
+        };
 
-      if (transError) throw transError;
+        const { error: transError } = await supabase
+          .from('transactions')
+          .insert(transactionData);
 
-      // Local storage backup for immediate UI updates
+        if (transError) throw transError;
+      }
+
+      // 3. Finalize and Navigate
       const activeParkingData = {
         sessionId: session.id,
         location: parkingLocation,
         vehicle: vehicleData.license_plate,
         vehicleModel: vehicleData.model,
         amount: 150,
-        entryTime: new Date().toLocaleTimeString('en-IN', {
+        entryTime: new Date(session.entry_time || session.created_at).toLocaleTimeString('en-IN', {
           hour: '2-digit',
           minute: '2-digit',
           hour12: true
         }),
-        startTime: new Date().toISOString()
+        startTime: session.entry_time || session.created_at || new Date().toISOString()
       };
       await AsyncStorage.setItem('activeParking', JSON.stringify(activeParkingData));
 
@@ -124,7 +158,6 @@ function ConfirmParking() {
         amount: 150
       });
     } catch (error) {
-
       Alert.alert('Error', 'Failed to start parking session. Please check your connection.');
     } finally {
       setIsProcessing(false);
@@ -132,7 +165,7 @@ function ConfirmParking() {
   };
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
 
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()}>
@@ -285,7 +318,7 @@ function ConfirmParking() {
       </View>
 
       <BottomNav />
-    </View>
+    </Animated.View>
   );
 }
 

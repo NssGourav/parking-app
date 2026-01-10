@@ -10,6 +10,7 @@ import {
   Platform,
   ScrollView,
   Alert,
+  Animated,
 } from 'react-native';
 import { supabase } from '../lib/supabase';
 
@@ -17,6 +18,15 @@ export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const fadeAnim = React.useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -98,72 +108,74 @@ export default function Login({ navigation }) {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.authCard}>
-          <View style={styles.authHeader}>
-            <Text style={styles.authTitle}>Smart Parking</Text>
-            <Text style={styles.authSubtitle}>Welcome back! Please login to continue.</Text>
-          </View>
-
-          <View style={styles.authForm}>
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>Email</Text>
-              <TextInput
-                style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                placeholder="Enter your email"
-                placeholderTextColor="#999"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                editable={!loading}
-              />
+    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.authCard}>
+            <View style={styles.authHeader}>
+              <Text style={styles.authTitle}>Smart Parking</Text>
+              <Text style={styles.authSubtitle}>Welcome back! Please login to continue.</Text>
             </View>
 
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>Password</Text>
-              <TextInput
-                style={styles.input}
-                value={password}
-                onChangeText={setPassword}
-                placeholder="Enter your password"
-                placeholderTextColor="#999"
-                secureTextEntry
-                editable={!loading}
-              />
-            </View>
+            <View style={styles.authForm}>
+              <View style={styles.formGroup}>
+                <Text style={styles.label}>Email</Text>
+                <TextInput
+                  style={styles.input}
+                  value={email}
+                  onChangeText={setEmail}
+                  placeholder="Enter your email"
+                  placeholderTextColor="#999"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  editable={!loading}
+                />
+              </View>
 
-            <TouchableOpacity
-              style={[styles.btnPrimary, loading && styles.btnDisabled]}
-              onPress={handleLogin}
-              disabled={loading}
-            >
-              {loading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={styles.btnText}>Login</Text>
-              )}
-            </TouchableOpacity>
-          </View>
+              <View style={styles.formGroup}>
+                <Text style={styles.label}>Password</Text>
+                <TextInput
+                  style={styles.input}
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder="Enter your password"
+                  placeholderTextColor="#999"
+                  secureTextEntry
+                  editable={!loading}
+                />
+              </View>
 
-          <View style={styles.authFooter}>
-            <Text style={styles.footerText}>
-              Don't have an account?{' '}
-              <Text
-                style={styles.authLink}
-                onPress={() => navigation.navigate('Register')}
+              <TouchableOpacity
+                style={[styles.btnPrimary, loading && styles.btnDisabled]}
+                onPress={handleLogin}
+                disabled={loading}
               >
-                Register
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.btnText}>Login</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.authFooter}>
+              <Text style={styles.footerText}>
+                Don't have an account?{' '}
+                <Text
+                  style={styles.authLink}
+                  onPress={() => navigation.navigate('Register')}
+                >
+                  Register
+                </Text>
               </Text>
-            </Text>
+            </View>
           </View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </Animated.View>
   );
 }
 

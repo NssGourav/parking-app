@@ -1,13 +1,13 @@
 {
   "expo": {
     "name": "Smart Parking",
-    "slug": "parking-app-mobile",
+    "slug": "parking-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./mobile/assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./mobile/assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -29,6 +29,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ada2aacc-48f8-4481-9bc1-4ae3913d6c66"
+      }
+    },
+    "owner": "nssgouravvs-organization"
   }
 }

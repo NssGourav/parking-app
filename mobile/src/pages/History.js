@@ -26,6 +26,9 @@ function History() {
           vehicles (
             license_plate,
             model
+          ),
+          sites (
+            name
           )
         `)
         .eq('user_id', user.id)
@@ -79,7 +82,7 @@ function History() {
               <View key={tx.id} style={styles.transactionCard}>
                 <View style={styles.transactionHeader}>
                   <View style={styles.transactionInfo}>
-                    <Text style={styles.transactionSiteName}>Phoenix Mall</Text>
+                    <Text style={styles.transactionSiteName}>{tx.sites?.name || 'Parking Site'}</Text>
                     <Text style={styles.transactionVehicle}>
                       {tx.vehicles?.license_plate || tx.vehicle_id}
                     </Text>

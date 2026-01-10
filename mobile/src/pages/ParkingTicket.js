@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet, Share, Alert } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet, Share, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase';
@@ -17,6 +17,7 @@ function ParkingTicket() {
   const [amountPaid, setAmountPaid] = React.useState(150);
   const [entryTime, setEntryTime] = React.useState('');
   const [loading, setLoading] = React.useState(true);
+  const [isRetrieving, setIsRetrieving] = React.useState(false);
 
   useEffect(() => {
     loadTicketData();
@@ -39,6 +40,10 @@ function ParkingTicket() {
           vehicles (
             license_plate,
             model
+          ),
+          sites (
+            name,
+            address
           )
         `)
         .eq('user_id', user.id)
@@ -54,7 +59,8 @@ function ParkingTicket() {
           model: session.vehicle_model || session.vehicles?.model || 'Vehicle',
           license_plate: session.vehicle_number || session.vehicles?.license_plate || 'N/A'
         });
-        setParkingLocation('Phoenix Mall'); // Example for prototype
+        setParkingLocation(session.sites?.name || 'Parking Location');
+        const parkingAddress = session.sites?.address || 'Site Address';
         setTicketId(`TK-${session.id.slice(0, 8).toUpperCase()}`);
         setEntryTime(new Date(session.entry_time || session.created_at).toLocaleTimeString('en-IN', {
           hour: '2-digit',
@@ -139,6 +145,7 @@ function ParkingTicket() {
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
         bounces={true}
+        onMomentumScrollEnd={() => { }}
       >
 
         <View style={styles.ticketCard}>
@@ -177,7 +184,8 @@ function ParkingTicket() {
               <MapPin size={16} color="#6b7280" />
               <Text style={styles.infoLabel}>Location</Text>
             </View>
-            <Text style={styles.infoValue}>Malad West, Mumbai</Text>
+            <Text style={styles.infoValue}>{parkingLocation}</Text>
+            <Text style={styles.infoSubValue}>{activeParking?.sites?.address || 'Site Address'}</Text>
           </View>
 
           {/* Entry Time */}
@@ -208,7 +216,8 @@ function ParkingTicket() {
 
         <Pressable
           onPress={async () => {
-
+            if (isRetrieving) return;
+            setIsRetrieving(true);
             try {
               if (activeParking?.id) {
                 await supabase
@@ -224,23 +233,31 @@ function ParkingTicket() {
                 sessionId: activeParking?.id
               });
             } catch (error) {
-
               navigation.navigate('CustomerRetrievalProgress', {
                 vehicle: vehicleData,
                 location: parkingLocation,
                 entryTime: entryTime,
                 sessionId: activeParking?.id
               });
+            } finally {
+              setIsRetrieving(false);
             }
           }}
           style={({ pressed }) => [
             styles.actionButton,
             styles.primaryButton,
-            pressed && { opacity: 0.8 }
+            (pressed || isRetrieving) && { opacity: 0.8 }
           ]}
+          disabled={isRetrieving}
         >
-          <Car size={20} color="#ffffff" />
-          <Text style={styles.primaryButtonText}>Get My Car</Text>
+          {isRetrieving ? (
+            <ActivityIndicator color="#ffffff" size="small" />
+          ) : (
+            <>
+              <Car size={20} color="#ffffff" />
+              <Text style={styles.primaryButtonText}>Get My Car</Text>
+            </>
+          )}
         </Pressable>
 
         <Pressable
