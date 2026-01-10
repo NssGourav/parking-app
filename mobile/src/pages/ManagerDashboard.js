@@ -163,7 +163,7 @@ export default function ManagerDashboard() {
 
         <View style={styles.header}>
           <View style={styles.headerTop}>
-            <Pressable onPress={() => navigation.navigate('Login')}>
+            <Pressable onPress={() => navigation.replace('Login')}>
               <ArrowLeft size={24} color="#ffffff" />
             </Pressable>
             <Text style={styles.headerTitle}>Manager Dashboard</Text>

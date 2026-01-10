@@ -17,6 +17,7 @@ import {
   FileText,
   Eye,
   User as UserIcon,
+  LogOut,
 } from 'lucide-react-native';
 
 export default function SuperAdmin() {
@@ -222,7 +223,7 @@ export default function SuperAdmin() {
         <View style={styles.header}>
           <View style={styles.headerTop}>
             <Pressable onPress={handleLogout} style={styles.backButton}>
-              <ArrowLeft size={24} color="#ffffff" />
+              <LogOut size={24} color="#ffffff" />
             </Pressable>
             <Text style={styles.headerTitle}>Super Admin</Text>
           </View>

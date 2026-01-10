@@ -88,13 +88,13 @@ export default function Login({ navigation }) {
         }
 
         if (roleName === 'user') {
-          navigation.replace('Home');
+          navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
         } else if (roleName === 'driver') {
-          navigation.replace('DriverConsole');
+          navigation.reset({ index: 0, routes: [{ name: 'DriverConsole' }] });
         } else if (roleName === 'manager') {
-          navigation.replace('ManagerDashboard');
+          navigation.reset({ index: 0, routes: [{ name: 'ManagerDashboard' }] });
         } else if (roleName === 'super_admin' || roleName === 'superadmin' || roleName === 'admin') {
-          navigation.replace('SuperAdmin');
+          navigation.reset({ index: 0, routes: [{ name: 'SuperAdmin' }] });
         } else {
           Alert.alert('Error', `Invalid user role: "${roleName}". Please contact support.`);
           setLoading(false);

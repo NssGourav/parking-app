@@ -251,28 +251,32 @@ export default function DriverConsole() {
             </View>
           </View>
         </View>
-      </ScrollView>
 
+        <View style={styles.statsSection}>
+          <Text style={styles.sectionTitleRegular}>Performance Overview</Text>
 
-      <View style={styles.statsGrid}>
-        <View style={styles.statCard}>
-          <Text style={styles.statLabel}>Today's Total</Text>
-          <Text style={[styles.statValue, { color: '#1e293b' }]}>12</Text>
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Today's Total</Text>
+            <Text style={[styles.statValue, { color: '#1e293b' }]}>12</Text>
+          </View>
+
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Parked</Text>
+            <Text style={[styles.statValue, { color: '#10b981' }]}>8</Text>
+          </View>
+
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Retrieved</Text>
+            <Text style={[styles.statValue, { color: '#f59e0b' }]}>4</Text>
+          </View>
+
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Rating</Text>
+            <Text style={[styles.statValue, { color: '#6366f1' }]}>4.9★</Text>
+          </View>
         </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statLabel}>Parked</Text>
-          <Text style={[styles.statValue, { color: '#10b981' }]}>8</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statLabel}>Retrieved</Text>
-          <Text style={[styles.statValue, { color: '#f59e0b' }]}>4</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statLabel}>Rating</Text>
-          <Text style={[styles.statValue, { color: '#6366f1' }]}>4.9★</Text>
-        </View>
-      </View>
-    </View>
+      </ScrollView >
+    </View >
   );
 }
 
@@ -285,7 +289,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    paddingBottom: 40,
+    paddingBottom: 60, // More padding to ensure clean scroll end
   },
   header: {
     backgroundColor: '#4e3efd',
@@ -526,34 +530,32 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '700',
   },
-  statsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    padding: 16,
-    gap: 12,
-    backgroundColor: '#f5f6ff',
+  statsSection: {
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 40,
+    gap: 16,
   },
   statCard: {
-    flex: 1,
-    minWidth: '45%',
     backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 24,
+    padding: 24,
     borderWidth: 1,
     borderColor: '#f1f5f9',
-    elevation: 2,
+    elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowRadius: 10,
   },
   statLabel: {
-    fontSize: 14,
+    fontSize: 15,
+    fontWeight: '500',
     color: '#64748b',
-    marginBottom: 4,
+    marginBottom: 8,
   },
   statValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 28,
+    fontWeight: '800',
   },
 });
