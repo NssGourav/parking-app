@@ -1,0 +1,7 @@
+{
+  "name": "parking-app-root",
+  "private": true,
+  "scripts": {
+    "build": "cd mobile && npm run build:web"
+  }
+}
