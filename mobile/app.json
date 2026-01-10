@@ -4,10 +4,10 @@
     "slug": "parking-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./mobile/assets/icon.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./mobile/assets/splash.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

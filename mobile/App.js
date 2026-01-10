@@ -4,7 +4,7 @@ global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
 
 import React from 'react';
-import { AppRegistry } from 'react-native';
+import { registerRootComponent } from 'expo';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
@@ -80,4 +80,4 @@ function App() {
 
 export default App;
 
-AppRegistry.registerComponent('main', () => App);
+registerRootComponent(App);

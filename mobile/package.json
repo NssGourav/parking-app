@@ -15,7 +15,6 @@
     "@react-navigation/native-stack": "^6.9.17",
     "@supabase/supabase-js": "^2.90.0",
     "expo": "^54.0.31",
-    "expo-barcode-scanner": "^13.0.1",
     "expo-status-bar": "~3.0.9",
     "lucide-react-native": "^0.562.0",
     "react": "19.1.0",
