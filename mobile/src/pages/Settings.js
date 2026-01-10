@@ -19,28 +19,24 @@ function Settings() {
 
   const fetchSettingsData = async () => {
     try {
-      setLoading(true);
+      if (!profile) {
+        setLoading(true);
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Parallel fetch for speed
+      const [profileRes, vehicleRes] = await Promise.all([
+        supabase.from('profiles').select('*').eq('id', user.id).single(),
+        supabase.from('vehicles').select('*', { count: 'exact', head: true }).eq('user_id', user.id).eq('is_active', true)
+      ]);
 
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      setProfile(profileData);
-
-
-      const { count } = await supabase
-        .from('vehicles')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .eq('is_active', true);
-      setVehicleCount(count || 0);
+      if (profileRes.data) setProfile(profileRes.data);
+      setVehicleCount(vehicleRes.count || 0);
 
     } catch (error) {
-
+      console.error('Settings fetch error:', error);
     } finally {
       setLoading(false);
     }

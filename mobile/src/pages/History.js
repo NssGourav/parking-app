@@ -14,22 +14,19 @@ function History() {
 
   const loadTransactions = async () => {
     try {
-      setLoading(true);
+      if (transactions.length === 0) {
+        setLoading(true);
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-
 
       const { data, error } = await supabase
         .from('transactions')
         .select(`
           *,
-          vehicles (
-            license_plate,
-            model
-          ),
-          sites (
-            name
-          )
+          vehicles (license_plate, model),
+          sites (name)
         `)
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
@@ -37,7 +34,7 @@ function History() {
       if (error) throw error;
       setTransactions(data || []);
     } catch (error) {
-
+      console.error('History fetch error:', error);
     } finally {
       setLoading(false);
     }

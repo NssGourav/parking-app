@@ -22,16 +22,18 @@ function BottomNav() {
 
   const checkActiveTicket = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      // Use getSession for instant check, getUser is only needed for sensitive ops
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
         setHasActiveTicket(false);
         return;
       }
 
+      // Quick check in parking_sessions
       const { data: sessionData } = await supabase
         .from('parking_sessions')
         .select('id')
-        .eq('user_id', user.id)
+        .eq('user_id', session.user.id)
         .in('status', ['active', 'retrieving'])
         .limit(1);
 

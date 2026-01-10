@@ -45,41 +45,37 @@ function Home() {
 
   const fetchData = async () => {
     try {
-      setLoading(true);
+      if (!profile && !activeParking) {
+        setLoading(true);
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      setProfile(profileData);
-
-
-      const { data: sessionData, error: activeError } = await supabase
-        .from('parking_sessions')
-        .select(`
+      // Run independent queries in parallel for high performance
+      const [
+        profileRes,
+        sessionRes,
+        historyRes,
+        vehicleRes
+      ] = await Promise.all([
+        supabase.from('profiles').select('*').eq('id', user.id).single(),
+        supabase.from('parking_sessions').select(`
           *,
-          vehicles (
-            license_plate,
-            model
-          ),
-          sites (
-            name
-          )
-        `)
-        .eq('user_id', user.id)
-        .in('status', ['active', 'retrieving'])
-        .order('created_at', { ascending: false })
-        .limit(1);
+          vehicles (license_plate, model),
+          sites (name)
+        `).eq('user_id', user.id).in('status', ['active', 'retrieving']).order('created_at', { ascending: false }).limit(1),
+        supabase.from('transactions').select(`
+          *,
+          vehicles (license_plate, model),
+          sites (name, address)
+        `).eq('user_id', user.id).order('created_at', { ascending: false }).limit(3),
+        supabase.from('vehicles').select('*').eq('user_id', user.id).eq('is_active', true).order('created_at', { ascending: false })
+      ]);
 
-      if (activeError) throw activeError;
+      if (profileRes.data) setProfile(profileRes.data);
 
-      const activeData = sessionData && sessionData.length > 0 ? sessionData[0] : null;
-
+      const activeData = sessionRes.data && sessionRes.data.length > 0 ? sessionRes.data[0] : null;
       if (activeData) {
         activeData.duration = calculateDuration(activeData.created_at);
         setActiveParking(activeData);
@@ -87,38 +83,11 @@ function Home() {
         setActiveParking(null);
       }
 
-      // Recent History
-      const { data: historyData } = await supabase
-        .from('transactions')
-        .select(`
-          *,
-          vehicles (
-            license_plate,
-            model
-          ),
-          sites (
-            name,
-            address
-          )
-        `)
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(3);
-
-      setRecentParking(historyData || []);
-
-      // Fetch all user vehicles
-      const { data: vehicleData } = await supabase
-        .from('vehicles')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
-
-      setMyVehicles(vehicleData || []);
+      setRecentParking(historyRes.data || []);
+      setMyVehicles(vehicleRes.data || []);
 
     } catch (error) {
-
+      console.error('Fetch error:', error);
     } finally {
       setLoading(false);
     }
@@ -138,9 +107,9 @@ function Home() {
     return () => clearInterval(interval);
   }, [activeParking]);
 
-  if (loading) {
+  if (loading && !profile) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f3f4f6' }}>
         <ActivityIndicator size="large" color="#6366f1" />
         <BottomNav />
       </View>

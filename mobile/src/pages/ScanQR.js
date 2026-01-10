@@ -18,15 +18,17 @@ function ScanQR() {
   const [location, setLocation] = useState('');
 
   useEffect(() => {
-    loadVehicles();
-    loadSites();
+    // Parallelize loading for performance
+    const init = async () => {
+      await Promise.all([loadVehicles(), loadSites()]);
+    };
+    init();
 
-
+    // Reduced simulation delay for better UX
     const scanTimer = setTimeout(() => {
       setScanning(false);
       setQrDetected(true);
-
-    }, 2000);
+    }, 1000);
 
     return () => clearTimeout(scanTimer);
   }, []);
@@ -44,26 +46,21 @@ function ScanQR() {
         setActiveSite(data);
         setLocation(data.name);
 
-
         if (route.params?.skipScan) {
           setScanning(false);
           setQrDetected(true);
           setShowVehicleSheet(true);
         }
-      } else {
-
       }
     } catch (error) {
-
       setLocation('Inorbit Mall');
     }
   };
 
   useEffect(() => {
     if (qrDetected && activeSite) {
-      setTimeout(() => {
-        setShowVehicleSheet(true);
-      }, 500);
+      // Show immediately rather than waiting 500ms
+      setShowVehicleSheet(true);
     }
   }, [qrDetected, activeSite]);
 
