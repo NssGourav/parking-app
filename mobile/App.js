@@ -1,8 +1,3 @@
-// Polyfill for TextEncoder (required for QRCode)
-import { TextEncoder, TextDecoder } from 'text-encoding';
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
-
 import React from 'react';
 import { registerRootComponent } from 'expo';
 import { NavigationContainer } from '@react-navigation/native';
@@ -43,18 +38,24 @@ function App() {
   const [isHydrated, setIsHydrated] = React.useState(false);
 
   React.useEffect(() => {
+    // Only polyfill on browser mount if needed, but QR code component might need it earlier.
+    // However, global assignment here is safer for hydration.
+    if (typeof global.TextEncoder === 'undefined') {
+      const { TextEncoder: TE, TextDecoder: TD } = require('text-encoding');
+      global.TextEncoder = TE;
+      global.TextDecoder = TD;
+    }
     setIsHydrated(true);
   }, []);
 
-  // Prevent hydration mismatch on web by waiting for hydration to complete
   if (Platform.OS === 'web' && !isHydrated) {
     return null;
   }
 
   return (
     <SafeAreaProvider>
-      <StatusBar style="auto" />
       <NavigationContainer>
+        <StatusBar style="auto" />
         <Stack.Navigator
           initialRouteName="Login"
           screenOptions={{
