@@ -26,11 +26,8 @@ import AddDriver from './src/pages/AddDriver';
 import ApprovalSuccess from './src/pages/ApprovalSuccess';
 import SuperAdmin from './src/pages/SuperAdmin';
 import DriverConsole from './src/pages/DriverConsole';
-import TaskSuccess from './src/pages/TaskSuccess';
-import DriverApprovalDetail from './src/pages/DriverApprovalDetail';
-
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Platform } from 'react-native';
+import { Platform, View, ActivityIndicator } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
@@ -38,18 +35,26 @@ function App() {
   const [isHydrated, setIsHydrated] = React.useState(false);
 
   React.useEffect(() => {
-    // Only polyfill on browser mount if needed, but QR code component might need it earlier.
-    // However, global assignment here is safer for hydration.
+    // Only polyfill if missing. Browser usually has these now.
     if (typeof global.TextEncoder === 'undefined') {
-      const { TextEncoder: TE, TextDecoder: TD } = require('text-encoding');
-      global.TextEncoder = TE;
-      global.TextDecoder = TD;
+      try {
+        const { TextEncoder: TE, TextDecoder: TD } = require('text-encoding');
+        global.TextEncoder = TE;
+        global.TextDecoder = TD;
+      } catch (e) {
+        console.warn('Polyfill loading failed:', e);
+      }
     }
     setIsHydrated(true);
   }, []);
 
+  // Show a loading UI instead of a white screen during hydration
   if (Platform.OS === 'web' && !isHydrated) {
-    return null;
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4e3efd' }}>
+        <ActivityIndicator size="large" color="#ffffff" />
+      </View>
+    );
   }
 
   return (
@@ -94,5 +99,3 @@ function App() {
 }
 
 export default App;
-
-registerRootComponent(App);
