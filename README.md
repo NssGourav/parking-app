@@ -1,13 +1,13 @@
 # Smart Parking Management System
 
 ## Project Overview
-This project is a comprehensive **Smart Parking Management System** designed to streamline urban parking operations through a multi-role digital ecosystem. It simplifies the parking lifecycle—from vehicle registration and QR-based entry to automated billing and retrieval progress tracking.
+This project is a comprehensive **Smart Parking Management System** designed to streamline urban parking operations through a multi role digital ecosystem. It simplifies the parking lifecycle from vehicle registration and QR based entry to automated billing and retrieval progress tracking.
 
 ### Users
 - **User (Customer):** Parks and retrieves their own vehicles using QR codes.
 - **Driver (Valet):** Handles the physical parking and retrieval tasks assigned by the system.
 - **Manager:** Oversees specific site operations, assigns valets, and manages driver recruitment.
-- **Super Admin:** The master controller of the system, managing all sites, approving new drivers, and monitoring global metrics.
+- **Super Admin:** The master controller of the system, managing all sites,approving new drivers, and monitoring global metrics.
 
 ### High-Level Architecture
 - **Mobile App:** Built with **React Native (Expo)**, providing a unified interface for all user roles.
@@ -18,25 +18,24 @@ This project is a comprehensive **Smart Parking Management System** designed to 
 ## Features Implemented
 
 ### 🚗 User Dashboard
-- **Vehicle Registration:** Add and manage a personal fleet of vehicles with auto-fill support.
+- **Vehicle Registration:** Add and manage a personal fleet of vehicles with auto fill support.
 - **QR-Based Parking:** Scan a location-specific QR code to initiate a parking session instantly.
-- **Active Session Tracking:** View live parking tickets, including duration and real-time charging.
+- **Active Session Tracking:** View live parking tickets, including duration and real time charging.
 - **Vehicle Retrieval:** Request vehicle retrieval via the "One-Tap Retrieve" feature and track the driver's progress.
 
 ### 🧤 Driver Flow
 - **Task Management:** Receive real-time assignments for parking or retrieving vehicles.
 - **State Machine Integration:** Systematic flow from "Request Received" to "Parked/Retrieved" with visual progress indicators.
-- **Performance Tracking:** View statistics on completed tasks within the driver console.
 
 ### 📈 Manager Dashboard
 - **Operational Oversight:** Monitor active sessions, waitlists, and completed transactions for their site.
-- **Driver Recruitment:** Submit new driver applications, including document uploads (license, photos), for system-wide approval.
-- **Site Metrics:** High-level overview of total revenue and ticket volume.
+- **Driver Recruitment:** Submit new driver applications, including document uploads (license, photos), for system wide approval.
+- **Site Metrics:** High level overview of total revenue and ticket volume.
 
 ### 🛡️ Super Admin Dashboard
-- **Site Management:** Toggle between diverse parking sites (e.g., Mall, Airport, Plaza) to view site-specific data.
+- **Site Management:** Toggle between diverse parking sites (e.g., Mall, Airport, Plaza) to view site specific data.
 - **Driver Approvals:** Review, approve, or reject pending driver applications with a detailed profile viewer.
-- **Global Metrics:** Real-time collection analytics (Daily vs. Total) and system-wide ticket history.
+- **Global Metrics:** Real-time collection analytics (Daily vs. Total) and system wide ticket history.
 
 ---
 
@@ -44,6 +43,13 @@ This project is a comprehensive **Smart Parking Management System** designed to 
 - **Frontend:** React Native, Expo, Lucide Icons, React Navigation.
 - **Backend:** Supabase (PostgreSQL, Auth, RLS).
 - **Styling:** Vanilla CSS (via StyleSheet) with a focus on premium, modern aesthetics and micro-animations.
+
+---
+## Tech Stack Rationale
+
+This project was implemented using React Native as I am pursuing my minors in Mobile Application Development. The goal was to build a fully functional, production style mobile application while closely matching the provided web prototype in terms of flow and features.
+
+All backend services (Supabase + PostgreSQL) are live and shared, making the solution web-compatible. If required, the frontend can be ported to React.js with minimal effort.
 
 ---
 
@@ -91,7 +97,7 @@ https://github.com/user-attachments/assets/c2330930-b9d4-4601-832c-f8a2b6a8709a
 
 
 ## APK
-[smart-parking-app.apk](./release/smart-parking-app.apk).
+[smart-parking-app.apk](./release/smart-parking-app.apk)
 
 ---
 
