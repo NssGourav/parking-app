@@ -86,8 +86,12 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 
 ---
 
-## APK
+https://github.com/user-attachments/assets/c2330930-b9d4-4601-832c-f8a2b6a8709a
 
+
+
+## APK
+[smart-parking-app.apk](./release/smart-parking-app.apk).
 
 ---
 
