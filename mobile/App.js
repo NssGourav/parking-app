@@ -34,11 +34,25 @@ import DriverConsole from './src/pages/DriverConsole';
 import TaskSuccess from './src/pages/TaskSuccess';
 import DriverApprovalDetail from './src/pages/DriverApprovalDetail';
 
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Platform } from 'react-native';
+
 const Stack = createNativeStackNavigator();
 
 function App() {
+  const [isHydrated, setIsHydrated] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  // Prevent hydration mismatch on web by waiting for hydration to complete
+  if (Platform.OS === 'web' && !isHydrated) {
+    return null;
+  }
+
   return (
-    <>
+    <SafeAreaProvider>
       <StatusBar style="auto" />
       <NavigationContainer>
         <Stack.Navigator
@@ -74,7 +88,7 @@ function App() {
           <Stack.Screen name="DriverApprovalDetail" component={DriverApprovalDetail} />
         </Stack.Navigator>
       </NavigationContainer>
-    </>
+    </SafeAreaProvider>
   );
 }
 
