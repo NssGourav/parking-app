@@ -26,6 +26,8 @@ import AddDriver from './src/pages/AddDriver';
 import ApprovalSuccess from './src/pages/ApprovalSuccess';
 import SuperAdmin from './src/pages/SuperAdmin';
 import DriverConsole from './src/pages/DriverConsole';
+import TaskSuccess from './src/pages/TaskSuccess';
+import DriverApprovalDetail from './src/pages/DriverApprovalDetail';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Platform, View, ActivityIndicator } from 'react-native';
 
