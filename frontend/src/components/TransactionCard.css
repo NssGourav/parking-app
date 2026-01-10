@@ -1,0 +1,82 @@
+.transaction-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.transaction-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.transaction-site {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.transaction-vehicle {
+  font-size: 14px;
+  color: #666;
+}
+
+.transaction-amount {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+}
+
+.transaction-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.detail-label {
+  color: #666;
+}
+
+.detail-value {
+  color: #333;
+  font-weight: 500;
+}
+
+.transaction-status-badge {
+  margin-top: 12px;
+}
+
+.status {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status.completed {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status.failed {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
