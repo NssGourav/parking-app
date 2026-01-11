@@ -94,8 +94,17 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 
 https://github.com/user-attachments/assets/c2330930-b9d4-4601-832c-f8a2b6a8709a
 
+---
 
+## Demo Credentials
 
+User: user@test.com  , password : user@123
+Driver: driver@test.com,  password : driver@123
+Manager: manager@test.com  , password : manager@123
+Super Admin: superadmin@test.com , password : superadmin@123
+james@gmail.com , password: james@123 [user]
+john@gmail.com, password: john@123 [user]
+---
 ## APK
 [smart-parking-app.apk](./release/smart-parking-app.apk)
 
