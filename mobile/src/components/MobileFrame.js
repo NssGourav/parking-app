@@ -6,13 +6,12 @@ import LoginAs from './LoginAs';
 function MobileFrame({ children }) {
   const route = useRoute();
   const routeName = route.name;
-  
-  const showLoginAs = routeName !== 'Login' && 
-                      routeName !== 'Register' && 
-                      routeName !== 'ScanQR' &&
-                      routeName !== 'ConfirmParking' &&
-                      routeName !== 'ParkingTicket' &&
-                      routeName !== 'RetrievalProgress';
+
+  const showLoginAs = routeName !== 'Login' &&
+    routeName !== 'ScanQR' &&
+    routeName !== 'ConfirmParking' &&
+    routeName !== 'ParkingTicket' &&
+    routeName !== 'RetrievalProgress';
   const isScanPage = routeName === 'ScanQR';
   const isConfirmPage = routeName === 'ConfirmParking' || routeName === 'ParkingTicket' || routeName === 'RetrievalProgress';
 

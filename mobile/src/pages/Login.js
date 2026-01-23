@@ -161,17 +161,7 @@ export default function Login({ navigation }) {
               </TouchableOpacity>
             </View>
 
-            <View style={styles.authFooter}>
-              <Text style={styles.footerText}>
-                Don't have an account?{' '}
-                <Text
-                  style={styles.authLink}
-                  onPress={() => navigation.navigate('Register')}
-                >
-                  Register
-                </Text>
-              </Text>
-            </View>
+
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
