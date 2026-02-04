@@ -13,6 +13,7 @@ import {
   Animated,
 } from 'react-native';
 import { supabase } from '../lib/supabase';
+import { Smartphone } from 'lucide-react-native';
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
@@ -161,7 +162,37 @@ export default function Login({ navigation }) {
               </TouchableOpacity>
             </View>
 
+            <View style={styles.demoSection}>
+              <Text style={styles.demoTitle}>Quick Access (Demo)</Text>
+              <View style={styles.demoChips}>
+                {[
+                  { label: 'Super Admin', email: 'superadmin@test.com', pass: 'superadmin@123' },
+                  { label: 'Manager', email: 'manager@test.com', pass: 'manager@123' },
+                  { label: 'Driver', email: 'driver@test.com', pass: 'driver@123' },
+                  { label: 'User', email: 'user@test.com', pass: 'user@123' },
+                  { label: 'James', email: 'james@gmail.com', pass: 'james@123' },
+                  { label: 'John', email: 'john@gmail.com', pass: 'john@123' },
+                ].map((cred) => (
+                  <TouchableOpacity
+                    key={cred.email}
+                    style={styles.demoChip}
+                    onPress={() => {
+                      setEmail(cred.email);
+                      setPassword(cred.pass);
+                    }}
+                  >
+                    <Text style={styles.demoChipText}>{cred.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
 
+            <View style={styles.footer}>
+              <View style={styles.mobileBadge}>
+                <Smartphone size={16} color="#fff" style={{ marginRight: 8 }} />
+                <Text style={styles.mobileBadgeText}>Made for Mobile</Text>
+              </View>
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -251,5 +282,55 @@ const styles = StyleSheet.create({
   authLink: {
     color: '#007AFF',
     fontWeight: '600',
+  },
+  demoSection: {
+    marginTop: 24,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    paddingTop: 16,
+  },
+  demoTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#666',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  demoChips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  demoChip: {
+    backgroundColor: '#f0f7ff',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#007AFF',
+  },
+  demoChipText: {
+    fontSize: 12,
+    color: '#007AFF',
+    fontWeight: '500',
+  },
+  footer: {
+    marginTop: 32,
+    alignItems: 'center',
+  },
+  mobileBadge: {
+    backgroundColor: '#333',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    flexDirection: 'row',
+  },
+  mobileBadgeText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
 });
